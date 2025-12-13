@@ -1,4 +1,4 @@
-# Eisenhower.ai - AI-Powered To-Do App
+# AI-Powered To-Do App
 
 A premium, AI-enhanced task management application built with Next.js, Tailwind CSS, and Google Gemini.
 
