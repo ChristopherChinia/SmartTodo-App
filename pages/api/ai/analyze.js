@@ -1,7 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method not allowed' });
@@ -23,6 +21,7 @@ export default async function handler(req, res) {
     }
 
     try {
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
         const prompt = `
@@ -30,7 +29,7 @@ export default async function handler(req, res) {
       1. Eisenhower Matrix Classification (URGENT_IMPORTANT, URGENT_NOT_IMPORTANT, NOT_URGENT_IMPORTANT, NOT_URGENT_NOT_IMPORTANT).
       2. Estimated duration in minutes.
       3. A suggested end time (HH:MM format) assuming the task starts now or at a logical time today.
-
+      
       Task Title: "${title}"
       Task Description: "${description || ''}"
       Current Date/Time: ${currentDate}
