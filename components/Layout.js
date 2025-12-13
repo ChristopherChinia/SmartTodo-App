@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, CheckCircle } from 'lucide-react';
+import { LayoutDashboard, CheckCircle, Sparkles } from 'lucide-react';
 
 const Layout = ({ children }) => {
     const pathname = usePathname();
@@ -11,6 +11,7 @@ const Layout = ({ children }) => {
     const navItems = [
         { href: '/', label: 'Active Tasks', icon: LayoutDashboard },
         { href: '/completed', label: 'Completed', icon: CheckCircle },
+        { href: '/insights', label: 'Insights', icon: Sparkles },
     ];
 
     return (
@@ -25,7 +26,7 @@ const Layout = ({ children }) => {
                                 <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
                             </div>
                             <span className="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
-                                Eisenhower<span className="font-light">.ai</span>
+                                SmartTodo
                             </span>
                         </div>
 

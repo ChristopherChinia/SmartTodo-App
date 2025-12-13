@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Plus, Sparkles } from 'lucide-react';
+import { X, Plus, Sparkles, Wand2 } from 'lucide-react';
 import { useTasks } from '../store/taskContext';
-import { CLASSIFICATION_TYPES } from '../services/ai';
+import { CLASSIFICATION_TYPES, analyzeTask } from '../services/ai';
 
 const TaskForm = ({ isOpen, onClose }) => {
     const { addTask, loading } = useTasks();
@@ -13,8 +13,33 @@ const TaskForm = ({ isOpen, onClose }) => {
     const [endTime, setEndTime] = useState('');
     const [isUrgent, setIsUrgent] = useState(false);
     const [isImportant, setIsImportant] = useState(false);
+    const [aiLoading, setAiLoading] = useState(false);
 
     if (!isOpen) return null;
+
+    const handleAiAnalyze = async () => {
+        if (!title) return;
+        setAiLoading(true);
+        const result = await analyzeTask(title, description);
+        setAiLoading(false);
+
+        if (result) {
+            if (result.classification) {
+                setIsUrgent(result.classification.includes('URGENT'));
+                setIsImportant(result.classification.includes('IMPORTANT'));
+            }
+            if (result.suggestedEndTime) {
+                setEndTime(result.suggestedEndTime);
+                // Set start time to now if empty
+                if (!startTime) {
+                    const now = new Date();
+                    const hours = String(now.getHours()).padStart(2, '0');
+                    const minutes = String(now.getMinutes()).padStart(2, '0');
+                    setStartTime(`${hours}:${minutes}`);
+                }
+            }
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -75,14 +100,29 @@ const TaskForm = ({ isOpen, onClose }) => {
                             <label className="block text-sm font-medium text-gray-400 mb-1">
                                 Task Title
                             </label>
-                            <input
-                                type="text"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                placeholder="What needs to be done?"
-                                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
-                                autoFocus
-                            />
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    placeholder="What needs to be done?"
+                                    className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all pr-12"
+                                    autoFocus
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleAiAnalyze}
+                                    disabled={!title || aiLoading}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="AI Analyze"
+                                >
+                                    {aiLoading ? (
+                                        <div className="w-4 h-4 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin"></div>
+                                    ) : (
+                                        <Wand2 size={18} />
+                                    )}
+                                </button>
+                            </div>
                         </div>
 
                         <div>
