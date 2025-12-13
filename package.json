@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "clean": "rimraf .next",
+    "clean": "node scripts/clean.js",
     "check-env": "node -r dotenv/config -e \"if(!process.env.GEMINI_API_KEY) console.warn('Warning: GEMINI_API_KEY is not set')\"",
     "prebuild": "npm run clean && npm run check-env",
     "prod": "npm run build && npm start"
