@@ -3,6 +3,8 @@
  * Kept for UI consistency after removing AI logic.
  */
 
+
+
 export const CLASSIFICATION_TYPES = {
     URGENT_IMPORTANT: 'URGENT_IMPORTANT',
     URGENT_NOT_IMPORTANT: 'URGENT_NOT_IMPORTANT',
@@ -46,10 +48,20 @@ export async function analyzeTask(title, description) {
 
 export async function getInsights(completedTasks) {
     try {
+        // Prepare data for AI: ensure only necessary fields are sent and formatted
+        const sanitizedTasks = completedTasks.map(task => ({
+            title: task.title,
+            classification: task.classification,
+            createdAt: task.createdAt,
+            // Add mocking for duration if not tracked, as the model expects something
+            // In a real app, we'd track completedAt.
+            completedAt: new Date().toISOString()
+        }));
+
         const response = await fetch('/api/ai/insights', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ completedTasks }),
+            body: JSON.stringify({ completedTasks: sanitizedTasks }),
         });
 
         if (!response.ok) throw new Error('Failed to get insights');

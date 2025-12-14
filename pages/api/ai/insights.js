@@ -1,8 +1,20 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import rateLimit from '../../../utils/rate-limit';
+
+const limiter = rateLimit({
+    interval: 60 * 1000, // 60 seconds
+    uniqueTokenPerInterval: 500, // Max 500 users per second
+});
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method not allowed' });
+    }
+
+    try {
+        await limiter.check(res, 20, 'CACHE_TOKEN'); // 20 requests per minute
+    } catch {
+        return res.status(429).json({ error: 'Rate limit exceeded' });
     }
 
     const { completedTasks } = req.body;
@@ -24,7 +36,7 @@ export default async function handler(req, res) {
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
         const tasksList = completedTasks.map(t =>
-            `- ${t.title} (${t.classification}, Duration: ${t.startTime}-${t.endTime})`
+            `- ${t.title} (${t.classification}, Created: ${t.createdAt}, Completed: ${t.completedAt})`
         ).join('\n');
 
         const prompt = `

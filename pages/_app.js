@@ -1,13 +1,17 @@
 import '@/styles/globals.css';
 import { TaskProvider } from '../store/taskContext';
+import { Toaster } from 'react-hot-toast';
 import Layout from '../components/Layout';
 
-export default function App({ Component, pageProps }) {
+function MyApp({ Component, pageProps }) {
     return (
         <TaskProvider>
             <Layout>
                 <Component {...pageProps} />
+                <Toaster position="bottom-right" />
             </Layout>
         </TaskProvider>
     );
 }
+
+export default MyApp;
